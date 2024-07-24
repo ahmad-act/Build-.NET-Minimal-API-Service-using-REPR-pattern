@@ -105,13 +105,6 @@ builder.Services.AddScoped<IDeleteBookInformationBL, DeleteBookInformationBL>();
 
 var app = builder.Build();
 
-// Apply migrations at startup
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<SystemDbContext>();
-    dbContext.Database.Migrate();
-}
-
 ApiVersionSet apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(1)
     .HasApiVersion(2)
@@ -132,6 +125,9 @@ routeGroupBuilder.MapDeleteBookInformationEndpoint();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Apply migrations at startup
+    app.ApplyMigrations();
+
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
